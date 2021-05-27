@@ -1,23 +1,6 @@
-import {
-  AspectRatio,
-  Box,
-  Button,
-  Image,
-  Link,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { sendGet } from "../utils/api";
+import { AspectRatio, Box, Image, Stack, Text } from "@chakra-ui/react";
 
-function Card({ hash, summary, longLine }: any) {
-  const [meme, setMeme] = useState<string | null>(null);
-
-  useEffect(() => {
-    sendGet(`https://api.imgflip.com/get_memes`).then(setMeme);
-
-    console.log(meme);
-  }, []);
+function Card({ hash }: any) {
   return (
     <Box
       p={4}
@@ -48,19 +31,6 @@ function Card({ hash, summary, longLine }: any) {
           color="teal.600"
         >
           {hash}
-        </Text>
-        <Link
-          my={1}
-          display="block"
-          fontSize="md"
-          lineHeight="normal"
-          fontWeight="semibold"
-          href="#"
-        >
-          {summary}
-        </Link>
-        <Text my={2} color="gray.500">
-          {longLine}
         </Text>
       </Stack>
     </Box>

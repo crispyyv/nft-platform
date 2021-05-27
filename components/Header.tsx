@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { default as NextLink } from "next/link";
 import React, { useContext } from "react";
-import { useAuth, UserContext } from "../utils/context/user";
+import { UserContext } from "../utils/context/user";
 
 const Header = () => {
   const { toggleColorMode, colorMode } = useColorMode();

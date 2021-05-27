@@ -13,11 +13,21 @@ export default function market({ tokens }: MarketProps) {
   return (
     <Layout>
       {tokens?.length > 0 ? (
-        <SimpleGrid columns={[1, 2, 1, 2]}>
-          {tokens?.map((el) => (
-            <Card {...el} />
-          ))}
-        </SimpleGrid>
+        <>
+          <Text
+            textAlign="center"
+            width="100%"
+            fontWeight="bold"
+            fontSize="20px"
+          >
+            All tokens:{" "}
+          </Text>
+          <SimpleGrid columns={[1, 2, 1, 2]}>
+            {tokens?.map((el) => (
+              <Card {...el} />
+            ))}
+          </SimpleGrid>
+        </>
       ) : (
         <Box w="full" display="flex" justifyContent="center">
           <Text>No available tokens now 🤯🤯🤯</Text>{" "}

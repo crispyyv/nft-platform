@@ -61,7 +61,6 @@ const me = () => {
           <Box>List of tokens: {JSON.stringify(tokens)}</Box>
         )}
       </Flex>
-
       <Flex>
         <Button onClick={handleAddTokens}>Add token</Button>
       </Flex>

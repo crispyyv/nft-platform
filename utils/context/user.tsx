@@ -25,7 +25,7 @@ export const UserContext = createContext<{
 
 export const useAuth = () => {
   const router = useRouter();
-  const { user, setUser, setLoading } = useContext(UserContext);
+  const { setUser, setLoading } = useContext(UserContext);
   const setUserContext = async (cookie: string, redirect?: string) => {
     const result = await axios.get(
       generateURI(`api/v1/user?user_cookie=${cookie}`)
