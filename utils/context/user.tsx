@@ -1,6 +1,8 @@
+import axios from "axios";
+import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
-import { generateURI, sendGet, sendPost } from "../api";
+import { generateURI, sendPost } from "../api";
 
 export type User = {
   id?: number;
@@ -19,9 +21,11 @@ export const useAuth = () => {
   const router = useRouter();
   const { user, setUser } = useContext(UserContext);
   const setUserContext = async (redirect?: string) => {
-    const result = await sendGet(generateURI(`api/v1/user/`));
-    if (!result.error) {
-      setUser(result.data);
+    const result = await axios.get(generateURI("api/v1/user"), {
+      withCredentials: true,
+    });
+    if (!result) {
+      setUser(result);
     }
     if (redirect) {
       router.push(redirect);
@@ -39,8 +43,12 @@ export const useAuth = () => {
         password,
       });
       //@ts-ignore
-      if (result?.data === "success") {
-        await setUserContext();
+      if (result?.data) {
+        Cookies.set(
+          result?.data?.set_cookie?.key,
+          result?.data?.set_cookie?.value
+        );
+        setTimeout(async () => await setUserContext(), 300);
       }
     } finally {
       console.log(user);
@@ -49,13 +57,12 @@ export const useAuth = () => {
 
   const register = async (nickname: string, password: string) => {
     try {
-      const result = await sendPost(generateURI("api/v1/user/create"), {
+      const result = await sendPost("/api/signup", {
         nickname,
         password,
       });
-      //@ts-ignore
-      if (result?.data?.id) {
-        await setUserContext(result.data.id);
+      if (result.ok) {
+        await setUserContext().catch(console.error);
       }
     } finally {
       console.log(user);
