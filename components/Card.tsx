@@ -7,9 +7,17 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { sendGet } from "../utils/api";
 
-function Card({ product, summary, longLine }: any) {
+function Card({ hash, summary, longLine }: any) {
+  const [meme, setMeme] = useState<string | null>(null);
+
+  useEffect(() => {
+    sendGet(`https://api.imgflip.com/get_memes`).then(setMeme);
+
+    console.log(meme);
+  }, []);
   return (
     <Box
       p={4}
@@ -39,7 +47,7 @@ function Card({ product, summary, longLine }: any) {
           letterSpacing="wide"
           color="teal.600"
         >
-          {product}
+          {hash}
         </Text>
         <Link
           my={1}
@@ -54,9 +62,6 @@ function Card({ product, summary, longLine }: any) {
         <Text my={2} color="gray.500">
           {longLine}
         </Text>
-        <Button maxWidth="100px" my={2}>
-          Click me!
-        </Button>
       </Stack>
     </Box>
   );

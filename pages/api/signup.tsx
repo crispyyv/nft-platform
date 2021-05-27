@@ -24,7 +24,7 @@ export default async function signup(
           secure: true,
           httpOnly: true,
         });
-        res.status(200).json({ ok: true });
+        res.status(200).json({ ok: true, cookie: cookies.value });
       }
     } catch (err) {
       console.error(err);

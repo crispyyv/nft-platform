@@ -16,16 +16,20 @@ export default function LoginOrRegisterForm({ isLogin = true }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
-
+  const [msg, setMsg] = useState("");
   const { login, register } = useAuth();
 
   const handleSubmit = async (evt: FormEvent) => {
     evt.preventDefault();
     setLoading(true);
     if (isLogin) {
-      login(email, password);
+      await login(email, password).catch((err) => {
+        setMsg(err.message);
+      });
     } else {
-      register(email, password);
+      await register(email, password).catch((err) => {
+        setMsg(err.message);
+      });
     }
     setLoading(false);
   };
@@ -89,6 +93,7 @@ export default function LoginOrRegisterForm({ isLogin = true }) {
                 * {isLogin ? "Don't have an account?" : "Have an account?"}
               </Text>
             </Link>
+            {msg.length > 0 && <Text color="red">{msg}</Text>}
           </form>
         </Box>
       </Box>

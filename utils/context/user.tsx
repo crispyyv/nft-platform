@@ -1,31 +1,38 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import { parseCookies } from "nookies";
 import { createContext, Dispatch, SetStateAction, useContext } from "react";
 import { generateURI, sendPost } from "../api";
 
 export type User = {
   id?: number;
   nickname?: string;
+  cookie?: string;
 };
 
 export const UserContext = createContext<{
   user: User | null;
   setUser: Dispatch<SetStateAction<User | null>>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 }>({
   user: null,
   setUser: () => {},
+  loading: false,
+  setLoading: () => {},
 });
 
 export const useAuth = () => {
   const router = useRouter();
-  const { user, setUser } = useContext(UserContext);
-  const setUserContext = async (redirect?: string) => {
-    const result = await axios.get(generateURI("api/v1/user"), {
-      withCredentials: true,
-    });
-    if (!result) {
-      setUser(result);
+  const { user, setUser, setLoading } = useContext(UserContext);
+  const setUserContext = async (cookie: string, redirect?: string) => {
+    const result = await axios.get(
+      generateURI(`api/v1/user?user_cookie=${cookie}`)
+    );
+    if (result.data) {
+      setUser({ ...result.data.data, cookie });
+      router.push("/me");
     }
     if (redirect) {
       router.push(redirect);
@@ -38,20 +45,17 @@ export const useAuth = () => {
 
   const login = async (nickname: string, password: string) => {
     try {
-      const result = await sendPost(generateURI("login"), {
+      const result = await sendPost("/api/login", {
         nickname,
         password,
       });
       //@ts-ignore
-      if (result?.data) {
-        Cookies.set(
-          result?.data?.set_cookie?.key,
-          result?.data?.set_cookie?.value
-        );
-        setTimeout(async () => await setUserContext(), 300);
+      if (result?.ok) {
+        await setUserContext(result.cookie).catch(console.error);
+      } else {
+        throw new Error("error");
       }
     } finally {
-      console.log(user);
     }
   };
 
@@ -61,13 +65,32 @@ export const useAuth = () => {
         nickname,
         password,
       });
-      if (result.ok) {
-        await setUserContext().catch(console.error);
+      if (result?.ok) {
+        await setUserContext(result.cookie).catch(console.error);
+      } else {
+        throw new Error("error");
       }
     } finally {
-      console.log(user);
     }
   };
 
-  return { login, register, logout };
+  const getUser = async () => {
+    const cookies = parseCookies();
+
+    if (cookies.user_cookie) {
+      setLoading(true);
+      await setUserContext(cookies.user_cookie);
+      setLoading(false);
+    }
+  };
+
+  const deleteUser = async () => {
+    Object.keys(Cookies.get()).forEach(function (cookieName) {
+      Cookies.remove(cookieName);
+    });
+    setUser(null);
+    router.push("/auth/signin");
+  };
+
+  return { login, register, logout, getUser, deleteUser };
 };

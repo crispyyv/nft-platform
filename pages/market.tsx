@@ -12,9 +12,9 @@ export interface MarketProps {
 export default function market({ tokens }: MarketProps) {
   return (
     <Layout>
-      {tokens.length > 0 ? (
+      {tokens?.length > 0 ? (
         <SimpleGrid columns={[1, 2, 1, 2]}>
-          {tokens.map((el) => (
+          {tokens?.map((el) => (
             <Card {...el} />
           ))}
         </SimpleGrid>
@@ -29,9 +29,7 @@ export default function market({ tokens }: MarketProps) {
 
 export const getServerSideProps = async () => {
   try {
-    const response = await axios.get(generateURI("api/v1/nft-token/all"), {
-      withCredentials: true,
-    });
+    const response = await axios.get(generateURI("api/v1/nft-token/all"), {});
     const tokens = response.data.data;
 
     return { props: { tokens } };

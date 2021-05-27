@@ -8,10 +8,12 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { default as NextLink } from "next/link";
-import React from "react";
+import React, { useContext } from "react";
+import { useAuth, UserContext } from "../utils/context/user";
 
 const Header = () => {
   const { toggleColorMode, colorMode } = useColorMode();
+  const { user } = useContext(UserContext);
   return (
     <Box as={"header"} w={"100%"} shadow={"base"} marginBottom="auto">
       <Container
@@ -48,34 +50,39 @@ const Header = () => {
               Market
             </Text>
           </NextLink>
-          <NextLink href="/users">
-            <Text
-              as="a"
-              fontFamily="heading"
-              fontWeight="medium"
-              padding={4}
-              transition="all"
-              transitionDuration=".3s"
-              cursor="pointer"
-              _hover={{ color: "purple.400" }}
-            >
-              Users List
-            </Text>
-          </NextLink>
-          <NextLink href="/auth/signup">
-            <Text
-              as="a"
-              fontFamily="heading"
-              fontWeight="medium"
-              padding={4}
-              transition="all"
-              transitionDuration=".3s"
-              cursor="pointer"
-              _hover={{ color: "purple.400" }}
-            >
-              SignUp
-            </Text>
-          </NextLink>
+
+          {!user?.cookie ? (
+            <NextLink href="/auth/signup">
+              <Text
+                as="a"
+                fontFamily="heading"
+                fontWeight="medium"
+                padding={4}
+                transition="all"
+                transitionDuration=".3s"
+                cursor="pointer"
+                _hover={{ color: "purple.400" }}
+              >
+                SignUp
+              </Text>
+            </NextLink>
+          ) : (
+            <NextLink href="/me">
+              <Text
+                as="a"
+                fontFamily="heading"
+                fontWeight="medium"
+                padding={4}
+                transition="all"
+                transitionDuration=".3s"
+                cursor="pointer"
+                _hover={{ color: "purple.400" }}
+              >
+                {user.nickname}
+              </Text>
+            </NextLink>
+          )}
+          {}
           <IconButton
             padding={4}
             background={"none"}
